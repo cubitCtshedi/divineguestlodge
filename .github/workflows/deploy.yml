@@ -17,6 +17,55 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install minifiers
+        run: npm install --no-save terser clean-css-cli html-minifier-terser
+
+      # Minify CSS — preserves /*! ... */ banner comments (legal/watermark).
+      - name: Minify CSS
+        run: |
+          npx cleancss --format keep-breaks=false -O2 \
+            -o css/styles.min.css css/styles.css
+          mv css/styles.min.css css/styles.css
+
+      # Minify JS — comments=/^!/ keeps the /*! banner so the watermark survives.
+      - name: Minify JS
+        run: |
+          npx terser js/app.js \
+            --compress passes=2 \
+            --mangle \
+            --comments=/^!/ \
+            -o js/app.tmp.js
+          mv js/app.tmp.js js/app.js
+
+      # Conservative HTML minify — collapse whitespace and strip dev comments only.
+      # Critically: do NOT minify inline JS/CSS or touch the JSON-LD <script> blocks.
+      - name: Minify HTML
+        run: |
+          npx html-minifier-terser \
+            --collapse-whitespace \
+            --conservative-collapse \
+            --remove-comments \
+            --remove-redundant-attributes \
+            --remove-script-type-attributes \
+            --remove-style-link-type-attributes \
+            --use-short-doctype \
+            --decode-entities \
+            -o index.html.min index.html
+          mv index.html.min index.html
+
+      - name: Verify minified files exist and are non-empty
+        run: |
+          test -s css/styles.css || (echo "styles.css empty after minify" && exit 1)
+          test -s js/app.js      || (echo "app.js empty after minify"      && exit 1)
+          test -s index.html     || (echo "index.html empty after minify"  && exit 1)
+          echo "Minified sizes:"
+          wc -c css/styles.css js/app.js index.html
+
       - name: Deploy via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -33,5 +82,8 @@ jobs:
             **/.git*
             **/.git*/**
             **/.github/**
+            **/node_modules/**
+            package*.json
             .cpanel.yml
+            LICENSE
             README.md

@@ -53,24 +53,34 @@
 DirectoryIndex index.html
 
 # ------------------------------------------------------------
-#  Compression
+#  Compression — Brotli first (smaller), gzip as fallback
 # ------------------------------------------------------------
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml application/manifest+json image/svg+xml
+</IfModule>
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml image/svg+xml
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml application/manifest+json image/svg+xml
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm|css|js|json|xml|svg|webmanifest)$">
+    Header append Vary Accept-Encoding
+  </FilesMatch>
 </IfModule>
 
 # ------------------------------------------------------------
-#  Browser caching
+#  Browser caching — TTLs (mod_expires)
 # ------------------------------------------------------------
 <IfModule mod_expires.c>
   ExpiresActive On
+  ExpiresDefault                          "access plus 1 month"
   ExpiresByType text/html                 "access plus 1 hour"
-  ExpiresByType text/css                  "access plus 1 month"
-  ExpiresByType application/javascript    "access plus 1 month"
-  ExpiresByType image/jpeg                "access plus 6 months"
-  ExpiresByType image/png                 "access plus 6 months"
-  ExpiresByType image/webp                "access plus 6 months"
-  ExpiresByType image/svg+xml             "access plus 6 months"
+  ExpiresByType text/css                  "access plus 1 year"
+  ExpiresByType application/javascript    "access plus 1 year"
+  ExpiresByType image/jpeg                "access plus 1 year"
+  ExpiresByType image/png                 "access plus 1 year"
+  ExpiresByType image/webp                "access plus 1 year"
+  ExpiresByType image/avif                "access plus 1 year"
+  ExpiresByType image/svg+xml             "access plus 1 year"
   ExpiresByType image/x-icon              "access plus 1 year"
   ExpiresByType font/woff                 "access plus 1 year"
   ExpiresByType font/woff2                "access plus 1 year"
@@ -78,4 +88,56 @@ DirectoryIndex index.html
   ExpiresByType text/xml                  "access plus 1 day"
   ExpiresByType application/xml           "access plus 1 day"
 </IfModule>
+
+# ------------------------------------------------------------
+#  Cache-Control — immutable for static assets, revalidate for HTML/SW
+# ------------------------------------------------------------
+<IfModule mod_headers.c>
+  # Long-lived, content-addressable-ish assets
+  <FilesMatch "\.(jpg|jpeg|png|webp|avif|gif|svg|ico|woff|woff2|ttf|otf|eot)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # HTML must always revalidate so site updates are picked up quickly
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # Service worker must NEVER be cached by browsers — required for updates
+  <FilesMatch "^sw\.js$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+    Header set Service-Worker-Allowed "/"
+  </FilesMatch>
+
+  # XML files (sitemap, etc.) — short cache so search engines see updates
+  <FilesMatch "\.(xml|txt)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+
+  # Manifest
+  <FilesMatch "\.webmanifest$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+</IfModule>
+
+# ------------------------------------------------------------
+#  Connection keep-alive
+# ------------------------------------------------------------
+<IfModule mod_headers.c>
+  Header set Connection keep-alive
+</IfModule>
+
+# ------------------------------------------------------------
+#  ETag — disable in favour of Cache-Control + Last-Modified
+# ------------------------------------------------------------
+<IfModule mod_headers.c>
+  Header unset ETag
+</IfModule>
+FileETag None
 
