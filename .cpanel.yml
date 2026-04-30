@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/CPANEL_USERNAME/public_html/
+    - /bin/cp index.html $DEPLOYPATH
+    - /bin/cp llms.txt $DEPLOYPATH
+    - /bin/cp robots.txt $DEPLOYPATH
+    - /bin/cp sitemap.xml $DEPLOYPATH
