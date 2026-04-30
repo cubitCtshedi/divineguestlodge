@@ -1,9 +1,0 @@
----
-deployment:
-  tasks:
-    - export DEPLOYPATH=/home/divinejm/public_html/
-    - /bin/cp index.html $DEPLOYPATH
-    - /bin/cp llms.txt $DEPLOYPATH
-    - /bin/cp robots.txt $DEPLOYPATH
-    - /bin/cp sitemap.xml $DEPLOYPATH
-    - /bin/cp .htaccess $DEPLOYPATH
