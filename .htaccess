@@ -1,0 +1,81 @@
+# ============================================================
+#  Divine Guest Lodge — Apache config
+# ============================================================
+
+# ------------------------------------------------------------
+#  Security headers
+# ------------------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-XSS-Protection "0"
+  Header always set Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=(), interest-cohort=()"
+
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com; frame-src https://www.google.com; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+
+  # HSTS — only enable once you're confident HTTPS is permanent on this domain
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# ------------------------------------------------------------
+#  Force HTTPS + retire WordPress endpoints
+# ------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # WordPress endpoints — return 410 Gone so search engines drop them
+  RewriteRule ^wp-admin($|/)        - [R=410,L]
+  RewriteRule ^wp-login\.php$       - [R=410,L]
+  RewriteRule ^wp-includes($|/)     - [R=410,L]
+  RewriteRule ^wp-content($|/)      - [R=410,L]
+  RewriteRule ^wp-json($|/)         - [R=410,L]
+  RewriteRule ^xmlrpc\.php$         - [R=410,L]
+  RewriteRule ^wp-cron\.php$        - [R=410,L]
+  RewriteRule ^wp-trackback\.php$   - [R=410,L]
+
+  # Sensitive WP files — hard 403, must never be served
+  RewriteRule ^wp-config(-sample)?\.php$ - [F,L]
+  RewriteRule ^\.env$                    - [F,L]
+</IfModule>
+
+# Block any leftover PHP from being executed at the root level.
+# (Comment this out if you ever add PHP back to this site.)
+<FilesMatch "\.(php|phtml|php[3-8])$">
+  Require all denied
+</FilesMatch>
+
+# But keep index.html winning at the root
+DirectoryIndex index.html
+
+# ------------------------------------------------------------
+#  Compression
+# ------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# ------------------------------------------------------------
+#  Browser caching
+# ------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html                 "access plus 1 hour"
+  ExpiresByType text/css                  "access plus 1 month"
+  ExpiresByType application/javascript    "access plus 1 month"
+  ExpiresByType image/jpeg                "access plus 6 months"
+  ExpiresByType image/png                 "access plus 6 months"
+  ExpiresByType image/webp                "access plus 6 months"
+  ExpiresByType image/svg+xml             "access plus 6 months"
+  ExpiresByType image/x-icon              "access plus 1 year"
+  ExpiresByType font/woff                 "access plus 1 year"
+  ExpiresByType font/woff2                "access plus 1 year"
+  ExpiresByType application/manifest+json "access plus 1 week"
+  ExpiresByType text/xml                  "access plus 1 day"
+  ExpiresByType application/xml           "access plus 1 day"
+</IfModule>
+
