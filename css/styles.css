@@ -403,6 +403,11 @@
   .room-price .num{font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:var(--gold);letter-spacing:-0.02em;line-height:1}
   .room-price .small{font-size:13px;color:rgba(255,255,255,.65);font-weight:400}
 
+  /* Read more button — hidden on desktop, mobile-only collapsible toggle */
+  .room-readmore{display:none}
+  /* By default (desktop) details flow normally; mobile rules below collapse them */
+  .room-details{display:block}
+
   /* ============================================================
      LIGHTBOX
      ============================================================ */
@@ -1037,7 +1042,7 @@
     .why{padding:80px 0}
     .why-head{margin-bottom:48px}
     .rooms{padding:80px 0 90px}
-    .room-feature{min-height:520px}
+    .room-feature-media{height:360px;min-height:360px}
     .rooms-head{margin-bottom:40px}
     .cta{padding:80px 0 90px}
     .cta-title{font-size:38px}
@@ -1045,6 +1050,63 @@
     .foot-grid{grid-template-columns:1fr 1fr;gap:40px 30px;margin-bottom:48px}
     .foot-brand{grid-column:1 / -1}
     .foot-tagline{max-width:none}
+
+    /* === Mobile-only: collapsible room details + bouncing read-more === */
+    .room-readmore{
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;margin:8px 0 18px;padding:11px 20px;
+      background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.92);
+      font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;
+      letter-spacing:.06em;text-transform:uppercase;
+      border:1px solid rgba(212,164,55,.35);
+      border-radius:999px;cursor:pointer;
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      animation:rrmBounce 2.4s ease-in-out infinite;
+      transition:transform .25s var(--ease),background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease)
+    }
+    .room-readmore .rrm-chev{color:var(--gold);transition:transform .35s var(--ease)}
+    .room-readmore:hover,.room-readmore:focus-visible{
+      background:rgba(212,164,55,.08);
+      border-color:rgba(212,164,55,.55);
+      color:#fff;
+      transform:translateY(-1px)
+    }
+    .room-readmore[aria-expanded="true"]{
+      animation:none;
+      background:rgba(255,255,255,.03);
+      border-color:rgba(255,255,255,.1);
+      color:rgba(255,255,255,.7)
+    }
+    .room-readmore[aria-expanded="true"] .rrm-chev{transform:rotate(180deg);color:rgba(255,255,255,.6)}
+
+    .room-details{
+      max-height:0;overflow:hidden;opacity:0;margin-top:0;
+      transition:max-height .5s var(--ease),opacity .35s var(--ease),margin-top .35s var(--ease)
+    }
+    .room-feature-content.is-expanded .room-details{
+      max-height:1500px;opacity:1;margin-top:8px;
+      background:rgba(0,0,0,.62);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      padding:16px 18px 4px
+    }
+
+    /* When JS relocates gs-dots into the content panel on mobile (below Reserve) */
+    .room-feature-content > .gs-dots{
+      position:relative;bottom:auto;left:auto;transform:none;
+      margin:18px auto 0;display:flex
+    }
+  }
+  @keyframes rrmBounce{
+    0%,75%,100%{transform:translateY(0) scale(1)}
+    40%{transform:translateY(-6px) scale(1.03)}
+    55%{transform:translateY(0) scale(1)}
+    65%{transform:translateY(-3px) scale(1.015)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .room-readmore{animation:none}
   }
   @media(max-width:560px){
     .container{padding:0 20px}
@@ -1071,9 +1133,10 @@
     .why-card{padding:28px 24px 26px}
     .rooms{padding:64px 0 70px}
     .rooms-title{font-size:30px}
-    .room-feature{min-height:460px}
-    .room-feature-content{padding:24px}
-    .room-feature h3{font-size:26px}
+    .room-feature-media{height:280px;min-height:280px}
+    .room-feature-content{padding:22px 20px 26px}
+    .room-feature h3{font-size:24px;margin-bottom:8px}
+    .room-readmore{font-size:12.5px;padding:11px 18px}
     .gs-ph-num{font-size:18px}
     .gs-ph-icon{width:48px;height:48px}
     .amenity{font-size:11px;padding:6px 11px}

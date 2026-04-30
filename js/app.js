@@ -527,12 +527,64 @@
       }, 280);
     }
 
-    // Click a sidebar room card → swap room
+    // Mobile breakpoint helper (matches @media(max-width:880px) in CSS)
+    var mobileMQ = window.matchMedia('(max-width:880px)');
+    function isMobile(){ return mobileMQ.matches; }
+
+    // Read-more / collapsible details (mobile-only) ===============
+    var content    = feature.querySelector('.room-feature-content');
+    var readMore   = document.getElementById('roomReadMore');
+    var readMoreLb = readMore && readMore.querySelector('.rrm-label');
+    var mediaEl    = feature.querySelector('.room-feature-media');
+
+    function setExpanded(expanded){
+      if (!content || !readMore) return;
+      content.classList.toggle('is-expanded', !!expanded);
+      readMore.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      if (readMoreLb) readMoreLb.textContent = expanded ? 'Show less' : 'Read more about this room';
+    }
+    if (readMore) {
+      readMore.addEventListener('click', function(){
+        var open = readMore.getAttribute('aria-expanded') === 'true';
+        setExpanded(!open);
+      });
+    }
+
+    // Move gs-dots between image area (desktop) and content panel (mobile)
+    function placeDots(){
+      if (!dotsEl || !mediaEl || !content) return;
+      if (isMobile()) {
+        // Mobile: dots live at the very bottom — after the Reserve button row
+        if (dotsEl.parentNode !== content || dotsEl !== content.lastElementChild) {
+          content.appendChild(dotsEl);
+        }
+      } else {
+        // Desktop: dots overlay the image
+        if (dotsEl.parentNode !== mediaEl) mediaEl.appendChild(dotsEl);
+      }
+    }
+    placeDots();
+    if (mobileMQ.addEventListener) mobileMQ.addEventListener('change', placeDots);
+    else if (mobileMQ.addListener) mobileMQ.addListener(placeDots);
+
+    // Click a sidebar room card → swap room (+ scroll to gallery on mobile)
     listEl.addEventListener('click', function(ev){
       var btn = ev.target.closest('.room-card');
       if (!btn || !listEl.contains(btn)) return;
       ev.preventDefault();
       setRoom(btn);
+      // Reset collapsed state on every room change
+      setExpanded(false);
+      // On mobile, smooth-scroll the gallery into view (account for sticky nav)
+      if (isMobile()) {
+        window.requestAnimationFrame(function(){
+          var nav = document.getElementById('mainNav');
+          var navH = nav ? nav.offsetHeight : 70;
+          var rect = feature.getBoundingClientRect();
+          var top = rect.top + window.pageYOffset - navH - 12;
+          if (window.scrollTo) window.scrollTo({ top: top, behavior: 'smooth' });
+        });
+      }
     });
 
     // Initial load: build the active room's gallery once the rooms
