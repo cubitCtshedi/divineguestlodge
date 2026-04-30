@@ -4,49 +4,49 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://divinelodge.co.za/</loc>
+    <loc>https://divineguestlodge.co.za/</loc>
     <lastmod>2026-04-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en-za" href="https://divinelodge.co.za/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://divinelodge.co.za/" />
+    <xhtml:link rel="alternate" hreflang="en-za" href="https://divineguestlodge.co.za/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://divineguestlodge.co.za/" />
     <image:image>
-      <image:loc>https://divinelodge.co.za/og-image.jpg</image:loc>
+      <image:loc>https://divineguestlodge.co.za/og-image.jpg</image:loc>
       <image:title>Divine Guest Lodge — Premium Guest House in Rustenburg</image:title>
       <image:caption>Rustenburg's top-rated guest house at 12 Keurtjie Avenue</image:caption>
     </image:image>
   </url>
 
   <url>
-    <loc>https://divinelodge.co.za/#rooms</loc>
+    <loc>https://divineguestlodge.co.za/#rooms</loc>
     <lastmod>2026-04-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://divinelodge.co.za/#about</loc>
+    <loc>https://divineguestlodge.co.za/#about</loc>
     <lastmod>2026-04-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://divinelodge.co.za/#gallery</loc>
+    <loc>https://divineguestlodge.co.za/#gallery</loc>
     <lastmod>2026-04-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://divinelodge.co.za/#location</loc>
+    <loc>https://divineguestlodge.co.za/#location</loc>
     <lastmod>2026-04-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://divinelodge.co.za/#faq</loc>
+    <loc>https://divineguestlodge.co.za/#faq</loc>
     <lastmod>2026-04-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
