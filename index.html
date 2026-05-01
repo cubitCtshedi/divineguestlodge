@@ -7,8 +7,8 @@
   <!-- ============================================================
        PRIMARY SEO META
        ============================================================ -->
-  <title>Divine Guest Lodge | Premier Guest House in Rustenburg, North West, South Africa</title>
-  <meta name="description" content="Divine Guest Lodge — Rustenburg's premier guest house at 12 Keurtjie Avenue, Geelhoutpark. 20 modern en-suite rooms, 24/7 security, uncapped WiFi, secure parking. 5 min from Rustenburg CBD, 7 min from Waterfall Mall, 45 min from Sun City. Book from R1,000/night." />
+  <title>Divine Guest Lodge | Premium Guest House in Rustenburg, North West, South Africa</title>
+  <meta name="description" content="Divine Guest Lodge — Rustenburg's Premium guest house at 12 Keurtjie Avenue, Geelhoutpark. 20 modern en-suite rooms, 24/7 security, uncapped WiFi, secure parking. 5 min from Rustenburg CBD, 7 min from Waterfall Mall, 45 min from Sun City. Book from R1,000/night." />
   <meta name="keywords" content="Rustenburg guest house, accommodation Rustenburg, guest house North West, Rustenburg lodging, mining contractor accommodation Rustenburg, business accommodation Rustenburg, Waterfall Mall accommodation, Sun City accommodation, Pilanesberg accommodation, affordable accommodation Rustenburg, where to stay Rustenburg, en-suite rooms Rustenburg, Geelhoutpark accommodation, Keurtjie Avenue Rustenburg, safe guest house Rustenburg, Divine Guest Lodge, Divine Lodge Rustenburg" />
   <meta name="author" content="Divine Guest Lodge" />
   <meta name="publisher" content="Divine Guest Lodge" />
@@ -33,7 +33,7 @@
   <meta name="geo.placename" content="Rustenburg, North West, South Africa" />
   <meta name="geo.position" content="-25.6585;27.2085" />
   <meta name="ICBM" content="-25.6585, 27.2085" />
-  <meta name="DC.title" content="Divine Guest Lodge | Premier Guest House in Rustenburg" />
+  <meta name="DC.title" content="Divine Guest Lodge | Premium Guest House in Rustenburg" />
   <meta name="DC.creator" content="Divine Guest Lodge" />
   <meta name="DC.subject" content="Guest House Accommodation in Rustenburg, South Africa" />
   <meta name="DC.publisher" content="Divine Guest Lodge" />
@@ -62,7 +62,7 @@
        ============================================================ -->
   <meta property="og:type" content="hotel.bnb" />
   <meta property="og:site_name" content="Divine Guest Lodge" />
-  <meta property="og:title" content="Divine Guest Lodge | Premier Guest House in Rustenburg" />
+  <meta property="og:title" content="Divine Guest Lodge | Premium Guest House in Rustenburg" />
   <meta property="og:description" content="Modern en-suite rooms, secure premises, uncapped WiFi. Walking distance from Rustenburg CBD. Trusted by business travellers, mining contractors, and families since 2015." />
   <meta property="og:url" content="https://divineguestlodge.co.za/" />
   <meta property="og:image" content="https://divineguestlodge.co.za/images/hero/Divine-boutique-hotel-deluxe-front-view.jpg" />
@@ -70,7 +70,7 @@
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Divine Guest Lodge — premier guest house in Rustenburg, North West, South Africa" />
+  <meta property="og:image:alt" content="Divine Guest Lodge — Premium guest house in Rustenburg, North West, South Africa" />
   <meta property="og:locale" content="en_ZA" />
   <meta property="og:locale:alternate" content="en_US" />
   <meta property="og:locale:alternate" content="en_GB" />
@@ -94,7 +94,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@divineguestlodge" />
   <meta name="twitter:creator" content="@divineguestlodge" />
-  <meta name="twitter:title" content="Divine Guest Lodge | Premier Rustenburg Guest House" />
+  <meta name="twitter:title" content="Divine Guest Lodge | Premium Rustenburg Guest House" />
   <meta name="twitter:description" content="20 modern en-suite rooms, 24/7 security, uncapped WiFi. 5 min from Rustenburg CBD. Book from R1,000/night." />
   <meta name="twitter:image" content="https://divineguestlodge.co.za/images/hero/Divine-boutique-hotel-deluxe-front-view.jpg" />
   <meta name="twitter:image:alt" content="Divine Guest Lodge exterior view — Rustenburg guest house" />
@@ -116,17 +116,21 @@
   <meta name="format-detection" content="telephone=yes" />
 
   <!-- Performance: preconnect & preload -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://www.google.com">
   <link rel="dns-prefetch" href="https://www.booking.com">
-  <link rel="preload" as="image" href="/images/hero/Divine-boutique-hotel-deluxe-front-view.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="/images/logo/Divine-Guest-lodge.png" fetchpriority="high">
+
+  <!-- Self-hosted variable font preload (eliminates third-party font request) -->
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/PlusJakartaSans/PlusJakartaSans-Variable.woff2" crossorigin>
+
+  <!-- Responsive AVIF preload for hero LCP element. Browsers without AVIF support skip this and pick up WebP/JPG from the CSS image-set(). -->
+  <link rel="preload" as="image" type="image/avif"
+        imagesrcset="/images/hero/Divine-boutique-hotel-deluxe-front-view-800.avif 800w, /images/hero/Divine-boutique-hotel-deluxe-front-view-1200.avif 1200w, /images/hero/Divine-boutique-hotel-deluxe-front-view-1600.avif 1600w"
+        imagesizes="100vw" fetchpriority="high">
+  <link rel="preload" as="image" type="image/avif" href="/images/logo/Divine-Guest-lodge.avif" fetchpriority="high">
 
   <!-- Site styles & app -->
   <link rel="stylesheet" href="/css/styles.css">
   <script defer src="/js/app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- ============================================================
        STRUCTURED DATA — Master @graph for AI + Search
@@ -145,7 +149,7 @@
         "alternateName": ["Divine Guest Lodge Rustenburg", "Divine Guest House Rustenburg", "Divine Lodge", "Divine Lodge Rustenburg"],
         "legalName": "Divine Guest Lodge",
         "slogan": "A Divine stay, timeless memories",
-        "description": "Divine Guest Lodge is a top-rated premier guest house in Rustenburg, North West, South Africa. Located at 12 Keurtjie Avenue, Geelhoutpark, just 5 minutes from Rustenburg CBD and 7 minutes from Waterfall Mall, the lodge offers 20 modern en-suite rooms across two room types — Deluxe (Bed Only) at R1,000 per night, and Family rooms with two double beds at R1,300 per night. Amenities include 24/7 security, uncapped high-speed WiFi, secure off-street parking, CCTV surveillance, and daily housekeeping. It serves business travellers, mining contractors on the platinum belt, leisure guests visiting Sun City and Pilanesberg, and families. Operating since 2015, the lodge maintains a 5.0 guest rating.",
+        "description": "Divine Guest Lodge is a top-rated Premium guest house in Rustenburg, North West, South Africa. Located at 12 Keurtjie Avenue, Geelhoutpark, just 5 minutes from Rustenburg CBD and 7 minutes from Waterfall Mall, the lodge offers 20 modern en-suite rooms across two room types — Deluxe (Bed Only) at R1,000 per night, and Family rooms with two double beds at R1,300 per night. Amenities include 24/7 security, uncapped high-speed WiFi, secure off-street parking, CCTV surveillance, and daily housekeeping. It serves business travellers, mining contractors on the platinum belt, leisure guests visiting Sun City and Pilanesberg, and families. Operating since 2015, the lodge maintains a 5.0 guest rating.",
         "url": "https://divineguestlodge.co.za/",
         "logo": {"@type": "ImageObject", "url": "https://divineguestlodge.co.za/images/logo/Divine-Guest-lodge.png", "width": 660, "height": 600},
         "image": [
@@ -215,7 +219,7 @@
         "url": "https://divineguestlodge.co.za/",
         "logo": "https://divineguestlodge.co.za/images/logo/Divine-Guest-lodge.png",
         "foundingDate": "2015",
-        "description": "Divine Guest Lodge is a family-run premier guest house in Rustenburg, North West, South Africa, established in 2015.",
+        "description": "Divine Guest Lodge is a family-run Premium guest house in Rustenburg, North West, South Africa, established in 2015.",
         "address": {"@type": "PostalAddress", "streetAddress": "12 Keurtjie Avenue", "addressLocality": "Rustenburg", "addressRegion": "North West", "postalCode": "0299", "addressCountry": "ZA"},
         "contactPoint": [{"@type": "ContactPoint", "telephone": "+27-14-000-0000", "contactType": "Reservations", "email": "info@divineguestlodge.co.za", "areaServed": ["ZA", "International"], "availableLanguage": ["English", "Afrikaans", "Setswana"]}]
       },
@@ -232,7 +236,7 @@
         "@type": "WebPage",
         "@id": "https://divineguestlodge.co.za/#webpage",
         "url": "https://divineguestlodge.co.za/",
-        "name": "Divine Guest Lodge | Premier Guest House in Rustenburg",
+        "name": "Divine Guest Lodge | Premium Guest House in Rustenburg",
         "isPartOf": {"@id": "https://divineguestlodge.co.za/#website"},
         "about": {"@id": "https://divineguestlodge.co.za/#lodging"},
         "datePublished": "2015-01-01",
@@ -310,7 +314,11 @@
 <nav class="nav-bar" id="mainNav" aria-label="Primary">
   <div class="container nav-inner">
     <a href="#top" class="logo" aria-label="Divine Guest Lodge — home">
-      <img src="/images/logo/Divine-Guest-lodge.png" alt="Divine Guest Lodge" class="logo-img" width="180" height="160" decoding="async" fetchpriority="high">
+      <picture>
+        <source type="image/avif" srcset="/images/logo/Divine-Guest-lodge.avif">
+        <source type="image/webp" srcset="/images/logo/Divine-Guest-lodge.webp">
+        <img src="/images/logo/Divine-Guest-lodge.png" alt="Divine Guest Lodge" class="logo-img" width="180" height="160" decoding="async" fetchpriority="high">
+      </picture>
     </a>
     <div class="nav-links" id="navLinks">
       <a href="#about">About</a>
@@ -399,7 +407,7 @@
         <a href="https://www.booking.com/hotel/za/divine-guest-lodge.en-gb.html?aid=304142&amp;label=gen173nr-10CAEoggI46AdIM1gEaPsBiAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuALkscTPBsACAdICJGU0MGU2N2QwLTdkNGYtNDlkMy1iNDQ2LTFjMWZmMDVjNzFmYtgCAeACAQ&amp;sid=b40f0d112307dec6aa5d77701884a948&amp;dest_id=2087824&amp;dest_type=hotel&amp;dist=0&amp;group_adults=2&amp;group_children=0&amp;hapos=1&amp;hpos=1&amp;no_rooms=1&amp;req_adults=2&amp;req_children=0&amp;room1=A%2CA&amp;sb_price_type=total&amp;sr_order=popularity&amp;srepoch=1777408250&amp;srpvid=201f903ad26203c8&amp;type=total&amp;ucfs=1&amp;" target="_blank" rel="noopener noreferrer" class="btn btn-gold">Browse Room Options <span class="btn-arrow">&rarr;</span></a>
       </div>
       <div class="about-visual reveal reveal-delay-2">
-        <div class="about-img" data-bg="/images/hero/Divine-boutique-hotel-deluxe-front-view.jpg" role="img" aria-label="Divine Guest Lodge exterior view"></div>
+        <div class="about-img" data-bg="/images/hero/Divine-boutique-hotel-deluxe-front-view-1200.jpg" role="img" aria-label="Divine Guest Lodge exterior view"></div>
         <div class="badge-rating">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
           <div class="badge-rating-text">
@@ -753,7 +761,11 @@
     <div class="foot-grid reveal-stagger">
       <div class="foot-brand">
         <div class="foot-brand-row">
-          <img src="/images/logo/Divine-Guest-lodge.png" alt="Divine Guest Lodge" class="foot-logo-img" width="200" height="180" loading="lazy" decoding="async">
+          <picture>
+            <source type="image/avif" srcset="/images/logo/Divine-Guest-lodge.avif">
+            <source type="image/webp" srcset="/images/logo/Divine-Guest-lodge.webp">
+            <img src="/images/logo/Divine-Guest-lodge.png" alt="Divine Guest Lodge" class="foot-logo-img" width="200" height="180" loading="lazy" decoding="async">
+          </picture>
         </div>
         <p class="foot-tagline">Rustenburg's trusted guest house for business and leisure travellers since 2015.</p>
         <div class="socials">
@@ -782,7 +794,7 @@
       </div>
     </div>
     <div class="foot-bottom">
-      <div>&copy; 2026 Divine Guest Lodge &mdash; 12 Keurtjie Avenue, Rustenburg. All rights reserved.</div>
+      <div>&copy; <span id="footerYear">2026</span> Divine Guest Lodge &mdash; 12 Keurtjie Avenue, Rustenburg. All rights reserved.</div>
       <div>Designed &amp; built by <a href="https://heshtech.co.za" target="_blank" rel="noopener noreferrer">Heshtech</a></div>
     </div>
   </div>

@@ -6,6 +6,10 @@
   'use strict';
   if (typeof document === 'undefined') return;
 
+  // Footer year — auto-update so the copyright never goes stale
+  var footerYearEl = document.getElementById('footerYear');
+  if (footerYearEl) footerYearEl.textContent = String(new Date().getFullYear());
+
   // Respect reduced-motion preference (used throughout)
   var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -311,6 +315,48 @@
       openLightbox(idx);
     });
 
+    // Swipe support — drag horizontally to advance/rewind slides.
+    // Uses pointer events so it works for both touch and mouse-drag.
+    var swipe = { active:false, startX:0, startY:0, suppressClick:false };
+    var SWIPE_THRESHOLD = 45;  // minimum horizontal travel (px)
+    var SWIPE_RATIO     = 1.4; // |dx| must beat |dy| by this ratio (filters out vertical scroll)
+
+    slideshowEl.addEventListener('pointerdown', function(ev){
+      if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+      swipe.active = true;
+      swipe.startX = ev.clientX;
+      swipe.startY = ev.clientY;
+      swipe.suppressClick = false;
+    });
+    slideshowEl.addEventListener('pointermove', function(ev){
+      if (!swipe.active) return;
+      if (Math.abs(ev.clientX - swipe.startX) > 8) ss.paused = true;
+    });
+    function endSwipe(ev){
+      if (!swipe.active) return;
+      swipe.active = false;
+      var dx = ev.clientX - swipe.startX;
+      var dy = ev.clientY - swipe.startY;
+      if (Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * SWIPE_RATIO) {
+        swipe.suppressClick = true;     // don't open lightbox on the trailing click
+        advance(dx < 0 ? 1 : -1);
+        startTimer();                   // reset auto-rotate after manual nav
+      }
+      ss.paused = false;
+    }
+    slideshowEl.addEventListener('pointerup', endSwipe);
+    slideshowEl.addEventListener('pointercancel', function(){
+      swipe.active = false; ss.paused = false;
+    });
+    // Capture-phase click-killer: if a swipe just happened, eat the click that follows
+    slideshowEl.addEventListener('click', function(ev){
+      if (swipe.suppressClick) {
+        ev.stopPropagation();
+        ev.preventDefault();
+        swipe.suppressClick = false;
+      }
+    }, true);
+
     // Click a dot → jump to that slide
     if (dotsEl) {
       dotsEl.addEventListener('click', function(ev){
@@ -614,9 +660,14 @@
   var prog = document.getElementById('scrollProgress');
   if (prog) {
     var ticking = false;
+    // Cache layout metrics; reading scrollHeight on every scroll frame
+    // forces a reflow. Refresh only on resize / load instead.
+    var cachedDocH = 0;
+    function refreshDocH(){
+      cachedDocH = document.documentElement.scrollHeight - window.innerHeight;
+    }
     function updateProgress(){
-      var docH = document.documentElement.scrollHeight - window.innerHeight;
-      var pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+      var pct = cachedDocH > 0 ? (window.scrollY / cachedDocH) * 100 : 0;
       prog.style.width = pct + '%';
       ticking = false;
     }
@@ -626,6 +677,9 @@
         ticking = true;
       }
     }, { passive: true });
+    window.addEventListener('resize', refreshDocH, { passive: true });
+    window.addEventListener('load', refreshDocH);
+    refreshDocH();
     updateProgress();
   }
 
@@ -730,8 +784,10 @@
   function attachMagnetic(btn){
     if (!btn) return;
     var raf2 = null;
+    var r = null;
+    btn.addEventListener('mouseenter', function(){ r = btn.getBoundingClientRect(); });
     btn.addEventListener('mousemove', function(e){
-      var r = btn.getBoundingClientRect();
+      if (!r) r = btn.getBoundingClientRect();
       var x = e.clientX - r.left - r.width / 2;
       var y = e.clientY - r.top - r.height / 2;
       if (raf2) cancelAnimationFrame(raf2);
@@ -742,6 +798,7 @@
     btn.addEventListener('mouseleave', function(){
       if (raf2) cancelAnimationFrame(raf2);
       btn.style.transform = '';
+      r = null;
     });
   }
   if (hasFinePointer && !prefersReduced) {

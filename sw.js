@@ -6,7 +6,7 @@
      - Everything else same-origin: stale-while-revalidate
    Bump VERSION to invalidate all caches on next visit. */
 
-const VERSION       = 'v1.5.3';
+const VERSION       = 'v1.9.0';
 const STATIC_CACHE  = `dgl-static-${VERSION}`;
 const IMAGE_CACHE   = `dgl-images-${VERSION}`;
 const FONT_CACHE    = `dgl-fonts-${VERSION}`;
@@ -18,8 +18,12 @@ const PRECACHE_URLS = [
   '/index.html',
   '/css/styles.css',
   '/js/app.js',
-  '/images/hero/Divine-boutique-hotel-deluxe-front-view.jpg',
-  '/images/logo/Divine-Guest-lodge.png',
+  '/fonts/PlusJakartaSans/PlusJakartaSans-Variable.woff2',
+  '/fonts/Inter/Inter-Variable-Latin.woff2',
+  '/images/hero/Divine-boutique-hotel-deluxe-front-view-1600.avif',
+  '/images/hero/Divine-boutique-hotel-deluxe-front-view-1200.avif',
+  '/images/hero/Divine-boutique-hotel-deluxe-front-view-800.avif',
+  '/images/logo/Divine-Guest-lodge.avif',
 ];
 
 const MAX_IMAGE_ENTRIES = 60;

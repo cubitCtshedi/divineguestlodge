@@ -2,6 +2,27 @@
  *  Designed & built by Heshtech (https://heshtech.co.za).
  *  Unauthorised reproduction or redistribution of this stylesheet is prohibited.
  *  Build: DGL-2026-HESHTECH */
+
+  /* ============================================================
+     SELF-HOSTED FONTS — Plus Jakarta Sans (variable)
+     ============================================================ */
+  @font-face{
+    font-family:'Plus Jakarta Sans';
+    src:url('/fonts/PlusJakartaSans/PlusJakartaSans-Variable.woff2') format('woff2-variations'),
+        url('/fonts/PlusJakartaSans/PlusJakartaSans-Variable.woff2') format('woff2');
+    font-weight:200 800;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:'Inter';
+    src:url('/fonts/Inter/Inter-Variable-Latin.woff2') format('woff2-variations'),
+        url('/fonts/Inter/Inter-Variable-Latin.woff2') format('woff2');
+    font-weight:400 800;
+    font-style:normal;
+    font-display:swap;
+  }
+
   /* ============================================================
      DESIGN TOKENS
      ============================================================ */
@@ -117,8 +138,35 @@
   }
   .hero-bg{
     position:absolute;inset:0;z-index:0;
-    background:url('/images/hero/Divine-boutique-hotel-deluxe-front-view.jpg') center/cover no-repeat;
+    background:url('/images/hero/Divine-boutique-hotel-deluxe-front-view-1600.jpg') center/cover no-repeat;
+    background-image:
+      image-set(
+        url('/images/hero/Divine-boutique-hotel-deluxe-front-view-1600.avif') type('image/avif') 1x,
+        url('/images/hero/Divine-boutique-hotel-deluxe-front-view-1600.webp') type('image/webp') 1x,
+        url('/images/hero/Divine-boutique-hotel-deluxe-front-view-1600.jpg') type('image/jpeg') 1x
+      );
+    background-position:center;background-size:cover;background-repeat:no-repeat;
     transform:scale(1.02);animation:slowZoom 20s ease-in-out infinite alternate;
+  }
+  @media (max-width:900px){
+    .hero-bg{
+      background-image:
+        image-set(
+          url('/images/hero/Divine-boutique-hotel-deluxe-front-view-1200.avif') type('image/avif') 1x,
+          url('/images/hero/Divine-boutique-hotel-deluxe-front-view-1200.webp') type('image/webp') 1x,
+          url('/images/hero/Divine-boutique-hotel-deluxe-front-view-1200.jpg') type('image/jpeg') 1x
+        );
+    }
+  }
+  @media (max-width:600px){
+    .hero-bg{
+      background-image:
+        image-set(
+          url('/images/hero/Divine-boutique-hotel-deluxe-front-view-800.avif') type('image/avif') 1x,
+          url('/images/hero/Divine-boutique-hotel-deluxe-front-view-800.webp') type('image/webp') 1x,
+          url('/images/hero/Divine-boutique-hotel-deluxe-front-view-800.jpg') type('image/jpeg') 1x
+        );
+    }
   }
   .hero-bg::after{
     content:'';position:absolute;inset:0;
@@ -249,6 +297,8 @@
     position:absolute;inset:0;z-index:0;
     background-color:#1f1815;
     overflow:hidden;
+    touch-action:pan-y;
+    -webkit-user-select:none;user-select:none;
     transition:transform 1.2s var(--ease),opacity .5s var(--ease),filter .5s var(--ease);
   }
   .gallery-slideshow::after{
@@ -708,7 +758,7 @@
   .foot-contact-item svg{color:var(--gold);flex-shrink:0;margin-top:2px}
   .foot-contact-item a{color:rgba(255,255,255,.65);transition:color .25s}
   .foot-contact-item a:hover{color:var(--gold)}
-  .foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;font-size:12.5px;color:rgba(255,255,255,.4)}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;font-size:12.5px;color:rgba(255,255,255,.72)}
 
   /* ============================================================
      ANIMATIONS
