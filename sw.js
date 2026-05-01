@@ -6,7 +6,7 @@
      - Everything else same-origin: stale-while-revalidate
    Bump VERSION to invalidate all caches on next visit. */
 
-const VERSION       = 'v1.9.0';
+const VERSION       = 'v1.10.0';
 const STATIC_CACHE  = `dgl-static-${VERSION}`;
 const IMAGE_CACHE   = `dgl-images-${VERSION}`;
 const FONT_CACHE    = `dgl-fonts-${VERSION}`;

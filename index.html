@@ -132,6 +132,19 @@
   <link rel="stylesheet" href="/css/styles.css">
   <script defer src="/js/app.js"></script>
 
+  <!-- Microsoft Clarity — heatmaps + session recordings. Skipped on localhost / preview hosts. -->
+  <script>
+    (function(){
+      var h = location.hostname;
+      if (h === 'localhost' || h === '127.0.0.1' || h.indexOf('192.168.') === 0) return;
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "wkblnfcws5");
+    })();
+  </script>
+
   <!-- ============================================================
        STRUCTURED DATA — Master @graph for AI + Search
        Combines: LodgingBusiness/LocalBusiness/Hotel, Organization,
@@ -253,7 +266,8 @@
           {"@type": "ListItem", "position": 3, "name": "Rooms", "item": "https://divineguestlodge.co.za/#rooms"},
           {"@type": "ListItem", "position": 4, "name": "Gallery", "item": "https://divineguestlodge.co.za/#gallery"},
           {"@type": "ListItem", "position": 5, "name": "Location", "item": "https://divineguestlodge.co.za/#location"},
-          {"@type": "ListItem", "position": 6, "name": "FAQ", "item": "https://divineguestlodge.co.za/#faq"}
+          {"@type": "ListItem", "position": 6, "name": "Reviews", "item": "https://divineguestlodge.co.za/#reviews"},
+          {"@type": "ListItem", "position": 7, "name": "FAQ", "item": "https://divineguestlodge.co.za/#faq"}
         ]
       },
       {
@@ -325,6 +339,7 @@
       <a href="#rooms">Rooms</a>
       <a href="#gallery">Gallery</a>
       <a href="#location">Location</a>
+      <a href="#reviews">Reviews</a>
       <a href="#faq">FAQ</a>
     </div>
     <a href="https://www.booking.com/hotel/za/divine-guest-lodge.en-gb.html?aid=304142&amp;label=gen173nr-10CAEoggI46AdIM1gEaPsBiAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuALkscTPBsACAdICJGU0MGU2N2QwLTdkNGYtNDlkMy1iNDQ2LTFjMWZmMDVjNzFmYtgCAeACAQ&amp;sid=b40f0d112307dec6aa5d77701884a948&amp;dest_id=2087824&amp;dest_type=hotel&amp;dist=0&amp;group_adults=2&amp;group_children=0&amp;hapos=1&amp;hpos=1&amp;no_rooms=1&amp;req_adults=2&amp;req_children=0&amp;room1=A%2CA&amp;sb_price_type=total&amp;sr_order=popularity&amp;srepoch=1777408250&amp;srpvid=201f903ad26203c8&amp;type=total&amp;ucfs=1&amp;" target="_blank" rel="noopener noreferrer" class="btn btn-gold nav-cta">Book Now <span class="btn-arrow">&rarr;</span></a>
@@ -645,6 +660,36 @@
 </section>
 
 <!-- ============================================================
+     REVIEWS — rotating 5-star Google reviews (sourced from JSON-LD)
+     ============================================================ -->
+<section class="reviews" id="reviews" aria-labelledby="reviewsTitle">
+  <div class="container">
+    <div class="reviews-head reveal">
+      <span class="section-tag reviews-tag">Five-Star Stays</span>
+      <h2 class="reviews-title" id="reviewsTitle">What Our Guests Say</h2>
+      <p class="reviews-sub">Real five-star reviews from guests who&rsquo;ve stayed at Divine Guest Lodge.</p>
+    </div>
+
+    <div class="reviews-rotator reveal" id="reviewsRotator" aria-live="polite" aria-atomic="true">
+      <p class="reviews-empty">Loading guest reviews&hellip;</p>
+    </div>
+
+    <div class="reviews-foot reveal reveal-delay-1">
+      <div class="reviews-dots" id="reviewsDots" role="tablist" aria-label="Review navigation"></div>
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=Divine+Guest+Lodge+Rustenburg" class="reviews-google-link" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
+          <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.6 16.1 18.9 13 24 13c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+          <path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.6-5.2l-6.3-5.3c-2 1.5-4.5 2.5-7.3 2.5-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
+          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.4 35.2 44 30 44 24c0-1.3-.1-2.4-.4-3.5z"/>
+        </svg>
+        See all reviews on Google
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
      FAQ — boosts SEO, AI recommendations, and voice search
      ============================================================ -->
 <section class="faq" id="faq" aria-labelledby="faqTitle">
@@ -781,6 +826,7 @@
           <li><a href="#rooms">Rooms</a></li>
           <li><a href="#gallery">Gallery</a></li>
           <li><a href="#location">Location</a></li>
+          <li><a href="#reviews">Reviews</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
       </nav>

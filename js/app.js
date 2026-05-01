@@ -22,6 +22,31 @@
     } catch(e){ return false; }
   }
 
+  // -------- Best-format picker for gallery JPGs --------
+  // Async-detect AVIF + WebP support; pickImageFormat() rewrites .jpg URLs
+  // to the best variant the browser can decode. If detection hasn't
+  // resolved yet, falls back to the original .jpg (graceful).
+  var fmtSupport = { avif: false, webp: false };
+  (function detectFormats(){
+    function probe(dataUrl, key){
+      var im = new Image();
+      im.onload = im.onerror = function(){
+        fmtSupport[key] = (im.width > 0 && im.height > 0);
+      };
+      im.src = dataUrl;
+    }
+    // Smallest valid 2x2 AVIF + 1x1 lossless WebP test images.
+    probe('data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=', 'avif');
+    probe('data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==', 'webp');
+  })();
+
+  function pickImageFormat(url){
+    if (typeof url !== 'string' || !/\.jpg$/i.test(url)) return url;
+    if (fmtSupport.avif) return url.replace(/\.jpg$/i, '.avif');
+    if (fmtSupport.webp) return url.replace(/\.jpg$/i, '.webp');
+    return url;
+  }
+
   // -------- Lazy background image loader --------
   // Decodes images off the main thread when supported, then fades in.
   function loadBg(el){
@@ -31,6 +56,7 @@
       el.removeAttribute('data-bg');
       return;
     }
+    url = pickImageFormat(url);
     var img = new Image();
     var safeUrl = url.replace(/"/g, '%22');
     var apply = function(){
@@ -187,7 +213,7 @@
       btn.setAttribute('tabindex', '-1'); // only the active slide is reachable
 
       if (typeof item === 'string' && item.length > 0 && isSafeImageURL(item)) {
-        var safeUrl = item.replace(/"/g, '%22');
+        var safeUrl = pickImageFormat(item).replace(/"/g, '%22');
         btn.style.backgroundImage = 'url("' + safeUrl + '")';
       } else {
         // Empty string / no URL → render placeholder
@@ -391,7 +417,7 @@
         var item = ss.collection[idx];
         if (typeof item === 'string' && item.length > 0 && isSafeImageURL(item)) {
           // Real image: set as background of lb-image
-          var safeUrl = item.replace(/"/g, '%22');
+          var safeUrl = pickImageFormat(item).replace(/"/g, '%22');
           lbImage.style.backgroundImage = 'url("' + safeUrl + '")';
         } else {
           // Placeholder
@@ -824,4 +850,171 @@
       }
     }, { passive: true });
   }
+
+  // ============================================================
+  // REVIEWS — rotating 5-star reviews sourced from JSON-LD
+  // ============================================================
+  // Single source of truth: the LodgingBusiness "review" array in the
+  // JSON-LD <script> in <head>. Update reviews there and they flow into
+  // both Google's structured-data parsers AND this rotator.
+  (function initReviews(){
+    var rotator = document.getElementById('reviewsRotator');
+    var dotsEl  = document.getElementById('reviewsDots');
+    if (!rotator) return;
+
+    function readJsonLdReviews(){
+      var scripts = document.querySelectorAll('script[type="application/ld+json"]');
+      for (var s = 0; s < scripts.length; s++) {
+        try {
+          var data = JSON.parse(scripts[s].textContent || '{}');
+          var graph = Array.isArray(data['@graph']) ? data['@graph'] : (Array.isArray(data) ? data : [data]);
+          for (var i = 0; i < graph.length; i++) {
+            var node = graph[i];
+            if (node && Array.isArray(node.review) && node.review.length) return node.review;
+          }
+        } catch(e) { /* malformed JSON-LD — skip */ }
+      }
+      return [];
+    }
+
+    function isFiveStar(r){
+      var rating = r && r.reviewRating && r.reviewRating.ratingValue;
+      return rating === 5 || rating === '5' || parseInt(rating, 10) === 5;
+    }
+
+    function relativeDate(iso){
+      if (!iso) return '';
+      var then = new Date(iso);
+      if (isNaN(then.getTime())) return '';
+      var ms = Date.now() - then.getTime();
+      var days = Math.floor(ms / 86400000);
+      if (days < 14) return days <= 1 ? 'This week' : days + ' days ago';
+      if (days < 60) return Math.round(days / 7) + ' weeks ago';
+      var months = Math.round(days / 30);
+      if (months < 12) return months + (months === 1 ? ' month ago' : ' months ago');
+      var years = Math.round(months / 12);
+      return years + (years === 1 ? ' year ago' : ' years ago');
+    }
+
+    function starSVG(){
+      // Five solid stars; using a single SVG path repeated.
+      var s = '';
+      for (var i = 0; i < 5; i++) {
+        s += '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>';
+      }
+      return s;
+    }
+
+    var reviews = readJsonLdReviews().filter(isFiveStar);
+    if (!reviews.length) {
+      rotator.innerHTML = '';
+      return; // nothing to render — leave the section empty
+    }
+
+    // Build cards
+    rotator.innerHTML = '';
+    var cards = [];
+    for (var k = 0; k < reviews.length; k++) {
+      var r = reviews[k];
+      var name = (r.author && r.author.name) ? r.author.name : 'Guest';
+      var body = r.reviewBody || '';
+      var when = relativeDate(r.datePublished);
+
+      var card = document.createElement('article');
+      card.className = 'review-card' + (k === 0 ? ' is-active' : '');
+      card.setAttribute('role', 'group');
+      card.setAttribute('aria-roledescription', 'review');
+      card.setAttribute('aria-hidden', k === 0 ? 'false' : 'true');
+
+      card.innerHTML =
+        '<div class="review-stars" aria-label="Rated 5 out of 5 stars">' + starSVG() + '</div>' +
+        '<blockquote class="review-quote">' + escapeHTML(body) + '</blockquote>' +
+        '<div class="review-meta">' +
+          '<div class="review-author">' + escapeHTML(name) + '</div>' +
+          (when ? '<div class="review-date">' + escapeHTML(when) + '</div>' : '') +
+        '</div>' +
+        '<div class="review-source">via Google</div>';
+
+      rotator.appendChild(card);
+      cards.push(card);
+    }
+
+    function escapeHTML(s){
+      return String(s).replace(/[&<>"']/g, function(c){
+        return c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;';
+      });
+    }
+
+    // Build dots (only if more than one review)
+    var dots = [];
+    if (dotsEl && cards.length > 1) {
+      for (var d = 0; d < cards.length; d++) {
+        var dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'reviews-dot' + (d === 0 ? ' is-active' : '');
+        dot.setAttribute('role', 'tab');
+        dot.setAttribute('aria-label', 'Show review ' + (d + 1) + ' of ' + cards.length);
+        dot.setAttribute('data-rev-index', String(d));
+        if (d === 0) dot.setAttribute('aria-selected', 'true');
+        dotsEl.appendChild(dot);
+        dots.push(dot);
+      }
+      dotsEl.addEventListener('click', function(ev){
+        var btn = ev.target.closest && ev.target.closest('.reviews-dot');
+        if (!btn) return;
+        var i = parseInt(btn.getAttribute('data-rev-index'), 10);
+        if (!isNaN(i)) showReview(i, true);
+      });
+    }
+
+    var activeIndex = 0;
+    function showReview(i, manual){
+      i = ((i % cards.length) + cards.length) % cards.length;
+      if (i === activeIndex) return;
+      cards[activeIndex].classList.remove('is-active');
+      cards[activeIndex].setAttribute('aria-hidden', 'true');
+      cards[i].classList.add('is-active');
+      cards[i].setAttribute('aria-hidden', 'false');
+      if (dots.length) {
+        dots[activeIndex].classList.remove('is-active');
+        dots[activeIndex].setAttribute('aria-selected', 'false');
+        dots[i].classList.add('is-active');
+        dots[i].setAttribute('aria-selected', 'true');
+      }
+      activeIndex = i;
+      if (manual) restartTimer();
+    }
+
+    // Auto-rotate (only when section is visible, only if motion allowed, only if >1 review)
+    var rotateMs = 7000;
+    var timer = null;
+    var isVisible = false;
+    var isHovered = false;
+
+    function clearTimer(){ if (timer) { clearInterval(timer); timer = null; } }
+    function startTimer(){
+      if (cards.length < 2 || prefersReduced) return;
+      clearTimer();
+      timer = setInterval(function(){
+        if (isVisible && !isHovered) showReview(activeIndex + 1, false);
+      }, rotateMs);
+    }
+    function restartTimer(){ clearTimer(); startTimer(); }
+
+    rotator.addEventListener('mouseenter', function(){ isHovered = true; });
+    rotator.addEventListener('mouseleave', function(){ isHovered = false; });
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function(entries){
+        for (var e = 0; e < entries.length; e++) {
+          isVisible = entries[e].isIntersecting;
+        }
+        if (isVisible) startTimer(); else clearTimer();
+      }, { threshold: 0.25 });
+      io.observe(rotator);
+    } else {
+      isVisible = true;
+      startTimer();
+    }
+  })();
 })();

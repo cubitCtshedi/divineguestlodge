@@ -1,5 +1,5 @@
 # Divine Guest Lodge — robots.txt
-# https://divinelodge.co.za/
+# https://divineguestlodge.co.za/
 
 User-agent: *
 Allow: /
@@ -51,5 +51,5 @@ User-agent: cohere-ai
 Allow: /
 
 # Sitemaps
-Sitemap: https://divinelodge.co.za/sitemap.xml
-Sitemap: https://divinelodge.co.za/llms.txt
+Sitemap: https://divineguestlodge.co.za/sitemap.xml
+Sitemap: https://divineguestlodge.co.za/llms.txt

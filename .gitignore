@@ -9,8 +9,12 @@ desktop.ini
 *.swp
 *~
 
+
 # cPanel
 .htpasswd
 cgi-bin/
 .well-known/
 error_log
+
+# Internal planning — keep local only
+TODO.md
