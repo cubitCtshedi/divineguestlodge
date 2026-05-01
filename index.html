@@ -671,7 +671,38 @@
     </div>
 
     <div class="reviews-rotator reveal" id="reviewsRotator" aria-live="polite" aria-atomic="true">
-      <p class="reviews-empty">Loading guest reviews&hellip;</p>
+      <!-- Server-rendered fallback. JS replaces these with the live JSON-LD review array on load,
+           but if JS fails or runs late (e.g. stale SW cache), these still display normally. -->
+      <article class="review-card is-active" role="group" aria-roledescription="review">
+        <div class="review-stars" aria-label="Rated 5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+        </div>
+        <blockquote class="review-quote">Best guest house in Rustenburg for business trips. The room is spotless, WiFi never drops, and the security gives real peace of mind.</blockquote>
+        <div class="review-meta">
+          <div class="review-author">Thabo M.</div>
+          <div class="review-date">Recent stay</div>
+        </div>
+        <div class="review-source">via Google</div>
+      </article>
+      <article class="review-card" role="group" aria-roledescription="review" aria-hidden="true">
+        <div class="review-stars" aria-label="Rated 5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>
+        </div>
+        <blockquote class="review-quote">I was nervous travelling alone to Rustenburg but Divine Guest Lodge made me feel completely safe and at home. The staff were warm and the room immaculate.</blockquote>
+        <div class="review-meta">
+          <div class="review-author">Sarah K.</div>
+          <div class="review-date">Recent stay</div>
+        </div>
+        <div class="review-source">via Google</div>
+      </article>
     </div>
 
     <div class="reviews-foot reveal reveal-delay-1">

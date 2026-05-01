@@ -905,49 +905,63 @@
       return s;
     }
 
-    var reviews = readJsonLdReviews().filter(isFiveStar);
-    if (!reviews.length) {
-      rotator.innerHTML = '';
-      return; // nothing to render — leave the section empty
-    }
-
-    // Build cards
-    rotator.innerHTML = '';
-    var cards = [];
-    for (var k = 0; k < reviews.length; k++) {
-      var r = reviews[k];
-      var name = (r.author && r.author.name) ? r.author.name : 'Guest';
-      var body = r.reviewBody || '';
-      var when = relativeDate(r.datePublished);
-
-      var card = document.createElement('article');
-      card.className = 'review-card' + (k === 0 ? ' is-active' : '');
-      card.setAttribute('role', 'group');
-      card.setAttribute('aria-roledescription', 'review');
-      card.setAttribute('aria-hidden', k === 0 ? 'false' : 'true');
-
-      card.innerHTML =
-        '<div class="review-stars" aria-label="Rated 5 out of 5 stars">' + starSVG() + '</div>' +
-        '<blockquote class="review-quote">' + escapeHTML(body) + '</blockquote>' +
-        '<div class="review-meta">' +
-          '<div class="review-author">' + escapeHTML(name) + '</div>' +
-          (when ? '<div class="review-date">' + escapeHTML(when) + '</div>' : '') +
-        '</div>' +
-        '<div class="review-source">via Google</div>';
-
-      rotator.appendChild(card);
-      cards.push(card);
-    }
-
     function escapeHTML(s){
       return String(s).replace(/[&<>"']/g, function(c){
         return c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;';
       });
     }
 
+    // Try to upgrade the server-rendered fallback cards with the live
+    // JSON-LD review array. If parsing fails or yields no 5-star reviews,
+    // we leave the hardcoded fallback in place — never blank, never
+    // "Loading..." stuck.
+    var reviews = readJsonLdReviews().filter(isFiveStar);
+    if (reviews.length) {
+      // Replace fallback cards with the full set from JSON-LD (with relative dates).
+      rotator.innerHTML = '';
+      for (var k = 0; k < reviews.length; k++) {
+        var r = reviews[k];
+        var name = (r.author && r.author.name) ? r.author.name : 'Guest';
+        var body = r.reviewBody || '';
+        var when = relativeDate(r.datePublished);
+
+        var card = document.createElement('article');
+        card.className = 'review-card' + (k === 0 ? ' is-active' : '');
+        card.setAttribute('role', 'group');
+        card.setAttribute('aria-roledescription', 'review');
+        card.setAttribute('aria-hidden', k === 0 ? 'false' : 'true');
+
+        card.innerHTML =
+          '<div class="review-stars" aria-label="Rated 5 out of 5 stars">' + starSVG() + '</div>' +
+          '<blockquote class="review-quote">' + escapeHTML(body) + '</blockquote>' +
+          '<div class="review-meta">' +
+            '<div class="review-author">' + escapeHTML(name) + '</div>' +
+            (when ? '<div class="review-date">' + escapeHTML(when) + '</div>' : '') +
+          '</div>' +
+          '<div class="review-source">via Google</div>';
+
+        rotator.appendChild(card);
+      }
+    }
+
+    // Operate on whatever cards are now in the DOM (hardcoded fallback OR JSON-LD render).
+    var cards = Array.prototype.slice.call(rotator.querySelectorAll('.review-card'));
+    if (!cards.length) return; // truly nothing to show — give up gracefully
+    // Make sure exactly one card is active (defensive: in case fallback markup ever drifts).
+    var hasActive = false;
+    for (var ci = 0; ci < cards.length; ci++) {
+      if (cards[ci].classList.contains('is-active')) { hasActive = true; break; }
+    }
+    if (!hasActive) {
+      cards[0].classList.add('is-active');
+      cards[0].setAttribute('aria-hidden', 'false');
+    }
+
     // Build dots (only if more than one review)
     var dots = [];
     if (dotsEl && cards.length > 1) {
+      // Clear any stale dots from a previous render.
+      while (dotsEl.firstChild) dotsEl.removeChild(dotsEl.firstChild);
       for (var d = 0; d < cards.length; d++) {
         var dot = document.createElement('button');
         dot.type = 'button';
