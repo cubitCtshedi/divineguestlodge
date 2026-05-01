@@ -956,9 +956,23 @@
   ============================================================
 -->
 
-<!-- Service worker — caches static assets + images for instant repeat visits -->
+<!-- Service worker — caches static assets + images for instant repeat visits.
+     Auto-reloads returning visitors once when a new SW takes over so
+     they never get stuck on a stale-cache version of the site. -->
 <script>
   if ('serviceWorker' in navigator) {
+    // Snapshot whether an SW was already controlling this page on first load.
+    // True = returning visitor whose old SW is currently in charge.
+    // False = brand-new visitor; the first SW takeover is expected, no reload needed.
+    var dgl_wasControlled = !!navigator.serviceWorker.controller;
+    var dgl_refreshing = false;
+
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (dgl_refreshing || !dgl_wasControlled) return;
+      dgl_refreshing = true;
+      window.location.reload();
+    });
+
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('/sw.js').catch(function () {});
     });
