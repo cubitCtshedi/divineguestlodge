@@ -1,12 +1,17 @@
 /* Divine Guest Lodge — service worker
    Strategy:
      - HTML (navigations): network-first, cache fallback (offline-safe)
-     - Images / fonts: cache-first, long-lived
-     - Google Fonts CSS: stale-while-revalidate
-     - Everything else same-origin: stale-while-revalidate
+     - Scripts (JS) + Stylesheets (CSS): network-first, cache fallback.
+       This is critical: stale-while-revalidate previously served the
+       OLD CSS/JS alongside fresh HTML, breaking layout and JS features
+       on the first visit after deploy. Network-first guarantees they
+       update together.
+     - Images / fonts: cache-first, long-lived (URLs are versioned by
+       filename or content; stale never matters).
+     - Everything else same-origin: stale-while-revalidate.
    Bump VERSION to invalidate all caches on next visit. */
 
-const VERSION       = 'v1.10.1';
+const VERSION       = 'v1.11.0';
 const STATIC_CACHE  = `dgl-static-${VERSION}`;
 const IMAGE_CACHE   = `dgl-images-${VERSION}`;
 const FONT_CACHE    = `dgl-fonts-${VERSION}`;
@@ -81,6 +86,21 @@ self.addEventListener('fetch', (event) => {
         caches.open(STATIC_CACHE).then((c) => c.put(req, copy));
         return res;
       }).catch(() => caches.match(req).then((m) => m || caches.match('/index.html')))
+    );
+    return;
+  }
+
+  // Scripts + Stylesheets: network-first so HTML and code update together.
+  // Falls back to cache when offline so the site still renders.
+  if ((req.destination === 'script' || req.destination === 'style') && url.origin === self.location.origin) {
+    event.respondWith(
+      fetch(req).then((res) => {
+        if (res && res.status === 200) {
+          const copy = res.clone();
+          caches.open(STATIC_CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      }).catch(() => caches.match(req))
     );
     return;
   }
