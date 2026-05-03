@@ -129,11 +129,11 @@
           io.unobserve(entries[i].target);
         }
       }
-    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-    var targets = document.querySelectorAll('.reveal, .reveal-stagger');
+    }, { threshold: 0.15, rootMargin: '0px 0px -18% 0px' });
+    var targets = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-stagger-left, .reveal-stagger-right');
     for (var j = 0; j < targets.length; j++) io.observe(targets[j]);
   } else {
-    var fb = document.querySelectorAll('.reveal, .reveal-stagger');
+    var fb = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-stagger-left, .reveal-stagger-right');
     for (var k = 0; k < fb.length; k++) fb[k].classList.add('in');
   }
 
