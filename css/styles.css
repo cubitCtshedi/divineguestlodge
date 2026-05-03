@@ -1293,3 +1293,54 @@
     .foot-grid{grid-template-columns:1fr;gap:36px;margin-bottom:36px}
     .foot-bottom{flex-direction:column;text-align:center;gap:10px;font-size:12px}
   }
+
+  /* ============================================================
+     FLOATING WHATSAPP BUTTON
+     Sits below the lightbox (z-index 1000) but above everything
+     else. Hidden while the lightbox is open so it doesn't overlap
+     the image viewer.
+     ============================================================ */
+  .wa-fab{
+    position:fixed;right:22px;bottom:22px;
+    width:60px;height:60px;border-radius:50%;
+    background:#25D366;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    text-decoration:none;
+    box-shadow:0 10px 26px -6px rgba(0,0,0,.32),0 4px 12px -2px rgba(37,211,102,.5);
+    z-index:80;
+    transition:transform .35s var(--ease),box-shadow .35s var(--ease),background-color .25s var(--ease);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wa-fab svg{width:30px;height:30px;display:block}
+  .wa-fab:hover,.wa-fab:focus-visible{
+    transform:translateY(-3px) scale(1.06);
+    background:#1ebe5b;
+    box-shadow:0 14px 32px -6px rgba(0,0,0,.38),0 6px 16px -2px rgba(37,211,102,.6);
+    outline:none;
+  }
+  .wa-fab:active{transform:translateY(-1px) scale(1.02)}
+  /* Pulse ring — same green, fades out as it expands. Pure transform/opacity
+     so it composites on the GPU. */
+  .wa-fab::before,.wa-fab::after{
+    content:'';position:absolute;inset:0;border-radius:50%;
+    border:2px solid rgba(37,211,102,.55);
+    pointer-events:none;
+    animation:waPulse 2.4s var(--ease) infinite;
+  }
+  .wa-fab::after{animation-delay:1.2s}
+  @keyframes waPulse{
+    0%  {transform:scale(1);opacity:.9}
+    80% {opacity:0}
+    100%{transform:scale(1.7);opacity:0}
+  }
+  /* Hide while the lightbox is open */
+  body.lightbox-locked .wa-fab{opacity:0;pointer-events:none;transform:translateY(20px) scale(.9)}
+
+  @media (prefers-reduced-motion:reduce){
+    .wa-fab::before,.wa-fab::after{animation:none;display:none}
+    .wa-fab{transition:none}
+  }
+  @media (max-width:600px){
+    .wa-fab{width:54px;height:54px;right:16px;bottom:16px}
+    .wa-fab svg{width:26px;height:26px}
+  }
