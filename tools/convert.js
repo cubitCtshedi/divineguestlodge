@@ -9,7 +9,7 @@ const fs   = require('fs/promises');
 const sharp = require('sharp');
 
 const ROOT = path.resolve(__dirname, '..', 'images');
-const TARGET_FOLDERS = ['gallery', 'experience'];
+const TARGET_FOLDERS = ['gallery', 'experience', 'about', 'deluxeRoom', 'familyRoom'];
 const SOURCE_EXT = /\.(jpe?g)$/i;
 
 // Quality settings tuned for hotel photography — visually transparent at these

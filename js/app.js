@@ -1057,7 +1057,8 @@
       '/images/gallery/divine-guest-Lodge-gallery-012.jpg',
       '/images/gallery/divine-guest-Lodge-gallery-013.jpg',
       '/images/gallery/divine-guest-Lodge-gallery-014jpg.jpg',
-      '/images/gallery/divine-guest-Lodge-gallery-015.jpg'
+      '/images/gallery/divine-guest-Lodge-gallery-015.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-016.jpg'
     ];
     var TOTAL = GALLERY_IMAGES.length;
     var CELL_COUNT = cells.length;
