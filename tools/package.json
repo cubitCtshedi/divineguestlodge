@@ -1,0 +1,11 @@
+{
+  "name": "dgl-image-tools",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "convert": "node convert.js"
+  },
+  "dependencies": {
+    "sharp": "^0.34.0"
+  }
+}

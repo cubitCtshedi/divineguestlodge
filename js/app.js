@@ -41,9 +41,9 @@
   })();
 
   function pickImageFormat(url){
-    if (typeof url !== 'string' || !/\.jpg$/i.test(url)) return url;
-    if (fmtSupport.avif) return url.replace(/\.jpg$/i, '.avif');
-    if (fmtSupport.webp) return url.replace(/\.jpg$/i, '.webp');
+    if (typeof url !== 'string' || !/\.jpe?g$/i.test(url)) return url;
+    if (fmtSupport.avif) return url.replace(/\.jpe?g$/i, '.avif');
+    if (fmtSupport.webp) return url.replace(/\.jpe?g$/i, '.webp');
     return url;
   }
 
@@ -56,7 +56,8 @@
       el.removeAttribute('data-bg');
       return;
     }
-    url = pickImageFormat(url);
+    // Opt-out for assets that only ship as .jpg (no .avif/.webp variants)
+    if (!el.hasAttribute('data-no-fmt')) url = pickImageFormat(url);
     var img = new Image();
     var safeUrl = url.replace(/"/g, '%22');
     var apply = function(){
@@ -1030,5 +1031,276 @@
       isVisible = true;
       startTimer();
     }
+  })();
+
+  // ============================================================
+  // INSIDE DIVINE GUEST LODGE — gallery cells + scrollable lightbox
+  // ============================================================
+  (function initInsideGallery(){
+    var galleryGrid = document.getElementById('galleryGrid');
+    if (!galleryGrid) return;
+    var cells = galleryGrid.querySelectorAll('.gallery-cell');
+    if (!cells.length) return;
+
+    var GALLERY_IMAGES = [
+      '/images/gallery/divine-guest-Lodge-gallery-001.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-002.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-003.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-004.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-005.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-006.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-007.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-008.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-009.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-010.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-011jpg.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-012.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-013.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-014jpg.jpg',
+      '/images/gallery/divine-guest-Lodge-gallery-015.jpg'
+    ];
+    var TOTAL = GALLERY_IMAGES.length;
+    var CELL_COUNT = cells.length;
+
+    function setBg(el, url){
+      if (!el || !url || !isSafeImageURL(url)) return;
+      var safe = pickImageFormat(url).replace(/"/g, '%22');
+      el.style.backgroundImage = 'url("' + safe + '")';
+    }
+
+    // Cell state — initial paint deferred until the section enters viewport
+    var state = [];
+    for (var c = 0; c < CELL_COUNT; c++) {
+      var cell = cells[c];
+      state.push({
+        cell: cell,
+        a: cell.querySelector('.gc-img-a'),
+        b: cell.querySelector('.gc-img-b'),
+        useA: true,
+        idx: c % TOTAL
+      });
+    }
+    var paintedInitial = false;
+    function paintInitial(){
+      if (paintedInitial) return;
+      paintedInitial = true;
+      for (var i = 0; i < state.length; i++) setBg(state[i].a, GALLERY_IMAGES[state[i].idx]);
+    }
+
+    // Looping rotation: round-robin one cell at a time so changes don't all
+    // happen at once. Each cell advances by CELL_COUNT (mod TOTAL), keeping the
+    // 6 visible images distinct at every moment.
+    var rotateMs = 1400;
+    var rotateTimer = null;
+    var rotPtr = 0;
+    var sectionVisible = false;
+
+    function rotateOne(){
+      var ci = rotPtr % CELL_COUNT;
+      rotPtr++;
+      var s = state[ci];
+      var nextIdx = (s.idx + CELL_COUNT) % TOTAL;
+      var hidden = s.useA ? s.b : s.a;
+      var visible = s.useA ? s.a : s.b;
+      var url = GALLERY_IMAGES[nextIdx];
+      var fetchUrl = pickImageFormat(url);
+      var preloadImg = new Image();
+      preloadImg.onload = function(){
+        setBg(hidden, url);
+        hidden.classList.add('is-visible');
+        visible.classList.remove('is-visible');
+        s.useA = !s.useA;
+        s.idx = nextIdx;
+      };
+      preloadImg.onerror = function(){};
+      preloadImg.src = fetchUrl;
+    }
+
+    function startRotation(){
+      if (rotateTimer || prefersReduced) return;
+      if (TOTAL <= CELL_COUNT) return;
+      if (!sectionVisible || document.hidden) return;
+      rotateTimer = window.setInterval(rotateOne, rotateMs);
+    }
+    function stopRotation(){
+      if (rotateTimer) { window.clearInterval(rotateTimer); rotateTimer = null; }
+    }
+
+    if ('IntersectionObserver' in window) {
+      var sectionIO = new IntersectionObserver(function(entries){
+        for (var i = 0; i < entries.length; i++) {
+          sectionVisible = entries[i].isIntersecting;
+          if (sectionVisible) {
+            paintInitial();
+            startRotation();
+          } else {
+            stopRotation();
+          }
+        }
+      }, { threshold: 0.1 });
+      sectionIO.observe(galleryGrid);
+    } else {
+      sectionVisible = true;
+      paintInitial();
+      startRotation();
+    }
+
+    // Pause rotation when the tab is backgrounded
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) stopRotation();
+      else if (sectionVisible) startRotation();
+    });
+
+    // -------- Carousel lightbox: swipe + auto-rotate, looping --------
+    var glb        = document.getElementById('galleryLightbox');
+    var glbImage   = document.getElementById('glbImage');
+    var glbWrap    = document.getElementById('glbImageWrap');
+    var glbClose   = document.getElementById('glbClose');
+    var glbPrev    = document.getElementById('glbPrev');
+    var glbNext    = document.getElementById('glbNext');
+    var glbCurEl   = document.getElementById('glbCounterCur');
+    var glbTotEl   = document.getElementById('glbCounterTotal');
+    if (!glb || !glbImage || !glbWrap || !glbClose) return;
+
+    var glbState = { open: false, index: 0, lastFocus: null };
+    var glbAutoMs = 4000;
+    var glbTimer = null;
+
+    function preload(idx){
+      // Eagerly fetch neighbours so swipes feel instant
+      var next = (idx + 1) % TOTAL;
+      var prev = (idx - 1 + TOTAL) % TOTAL;
+      var a = new Image(); a.src = pickImageFormat(GALLERY_IMAGES[next]);
+      var b = new Image(); b.src = pickImageFormat(GALLERY_IMAGES[prev]);
+    }
+
+    function renderGlb(idx){
+      glbImage.classList.add('is-changing');
+      window.setTimeout(function(){
+        var url = GALLERY_IMAGES[idx];
+        if (isSafeImageURL(url)) {
+          var safe = pickImageFormat(url).replace(/"/g, '%22');
+          glbImage.style.backgroundImage = 'url("' + safe + '")';
+        }
+        if (glbCurEl) glbCurEl.textContent = String(idx + 1);
+        glbImage.setAttribute('aria-label',
+          'Divine Guest Lodge gallery image ' + (idx + 1) + ' of ' + TOTAL);
+        glbImage.classList.remove('is-changing');
+        preload(idx);
+      }, 180);
+    }
+
+    function glbAdvance(dir){
+      glbState.index = (glbState.index + dir + TOTAL) % TOTAL;
+      renderGlb(glbState.index);
+    }
+
+    function startGlbTimer(){
+      stopGlbTimer();
+      if (prefersReduced) return;
+      if (TOTAL < 2) return;
+      glbTimer = window.setInterval(function(){
+        if (glbState.open) glbAdvance(1);
+      }, glbAutoMs);
+    }
+    function stopGlbTimer(){
+      if (glbTimer) { window.clearInterval(glbTimer); glbTimer = null; }
+    }
+
+    function openGlb(startIdx){
+      if (glbState.open) return;
+      glbState.open = true;
+      glbState.index = Math.max(0, Math.min(startIdx || 0, TOTAL - 1));
+      glbState.lastFocus = document.activeElement;
+      if (glbTotEl) glbTotEl.textContent = String(TOTAL);
+
+      glb.removeAttribute('hidden');
+      // force reflow so the transition runs
+      // eslint-disable-next-line no-unused-expressions
+      glb.offsetHeight;
+      glb.classList.add('is-open');
+      glb.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lightbox-locked');
+
+      renderGlb(glbState.index);
+      startGlbTimer();
+      window.setTimeout(function(){ try { glbClose.focus(); } catch(e) {} }, 80);
+    }
+
+    function closeGlb(){
+      if (!glbState.open) return;
+      glbState.open = false;
+      stopGlbTimer();
+      glb.classList.remove('is-open');
+      glb.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('lightbox-locked');
+      window.setTimeout(function(){
+        if (!glbState.open) glb.setAttribute('hidden', '');
+      }, 380);
+      if (glbState.lastFocus && typeof glbState.lastFocus.focus === 'function') {
+        try { glbState.lastFocus.focus(); } catch(e) {}
+      }
+    }
+
+    function cellOpen(cell){
+      var ci = parseInt(cell.getAttribute('data-cell-index'), 10) || 0;
+      var s = state[ci];
+      var idx = s ? s.idx : 0;
+      openGlb(idx);
+    }
+
+    for (var k = 0; k < CELL_COUNT; k++) {
+      (function(cell){
+        cell.addEventListener('click', function(){ cellOpen(cell); });
+        cell.addEventListener('keydown', function(ev){
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            cellOpen(cell);
+          }
+        });
+      })(cells[k]);
+    }
+
+    // Swipe (pointer-based, works for touch + mouse-drag)
+    var glbSwipe = { active:false, startX:0, startY:0 };
+    var GLB_SWIPE_TH = 45;
+    var GLB_SWIPE_RATIO = 1.4;
+
+    glbWrap.addEventListener('pointerdown', function(ev){
+      if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+      glbSwipe.active = true;
+      glbSwipe.startX = ev.clientX;
+      glbSwipe.startY = ev.clientY;
+    });
+    function glbEndSwipe(ev){
+      if (!glbSwipe.active) return;
+      glbSwipe.active = false;
+      var dx = ev.clientX - glbSwipe.startX;
+      var dy = ev.clientY - glbSwipe.startY;
+      if (Math.abs(dx) >= GLB_SWIPE_TH && Math.abs(dx) > Math.abs(dy) * GLB_SWIPE_RATIO) {
+        glbAdvance(dx < 0 ? 1 : -1);
+        startGlbTimer();
+      }
+    }
+    glbWrap.addEventListener('pointerup', glbEndSwipe);
+    glbWrap.addEventListener('pointercancel', function(){ glbSwipe.active = false; });
+
+    // Pause auto-rotate while pointer is over the image (desktop only)
+    glbWrap.addEventListener('mouseenter', stopGlbTimer);
+    glbWrap.addEventListener('mouseleave', function(){ if (glbState.open) startGlbTimer(); });
+
+    if (glbPrev) glbPrev.addEventListener('click', function(){ glbAdvance(-1); startGlbTimer(); });
+    if (glbNext) glbNext.addEventListener('click', function(){ glbAdvance(1); startGlbTimer(); });
+    glbClose.addEventListener('click', closeGlb);
+    glb.addEventListener('click', function(ev){
+      if (ev.target === glb) closeGlb();
+    });
+
+    document.addEventListener('keydown', function(ev){
+      if (!glbState.open) return;
+      if (ev.key === 'Escape') { ev.preventDefault(); closeGlb(); }
+      else if (ev.key === 'ArrowLeft') { ev.preventDefault(); glbAdvance(-1); startGlbTimer(); }
+      else if (ev.key === 'ArrowRight') { ev.preventDefault(); glbAdvance(1); startGlbTimer(); }
+    });
   })();
 })();
