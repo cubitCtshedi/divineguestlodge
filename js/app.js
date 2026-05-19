@@ -1043,7 +1043,7 @@
     if (!cells.length) return;
 
     var GALLERY_IMAGES = [
-      '/images/gallery/divine-guest-Lodge-gallery-001.jpg',
+    
       '/images/gallery/divine-guest-Lodge-gallery-002.jpg',
       '/images/gallery/divine-guest-Lodge-gallery-003.jpg',
       '/images/gallery/divine-guest-Lodge-gallery-004.jpg',
@@ -1053,12 +1053,7 @@
       '/images/gallery/divine-guest-Lodge-gallery-008.jpg',
       '/images/gallery/divine-guest-Lodge-gallery-009.jpg',
       '/images/gallery/divine-guest-Lodge-gallery-010.jpg',
-      '/images/gallery/divine-guest-Lodge-gallery-011jpg.jpg',
-      '/images/gallery/divine-guest-Lodge-gallery-012.jpg',
-      '/images/gallery/divine-guest-Lodge-gallery-013.jpg',
-      '/images/gallery/divine-guest-Lodge-gallery-014jpg.jpg',
       '/images/gallery/divine-guest-Lodge-gallery-015.jpg',
-      '/images/gallery/divine-guest-Lodge-gallery-016.jpg'
     ];
     var TOTAL = GALLERY_IMAGES.length;
     var CELL_COUNT = cells.length;

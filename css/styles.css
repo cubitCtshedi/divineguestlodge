@@ -952,6 +952,7 @@
   .reveal-stagger.in > *:nth-child(4){opacity:1;transform:translateY(0);transition-delay:.44s}
   .reveal-stagger.in > *:nth-child(5){opacity:1;transform:translateY(0);transition-delay:.56s}
   .reveal-stagger.in > *:nth-child(6){opacity:1;transform:translateY(0);transition-delay:.68s}
+  .reveal-stagger.in > *:nth-child(n+7){opacity:1;transform:translateY(0);transition-delay:.8s}
   /* Stagger variants that slide each child in from the side instead of
      fading up. Reuses the same .in trigger so JS doesn't change. */
   .reveal-stagger-left > *,.reveal-stagger-right > *{opacity:0;transition:opacity 1s var(--ease),transform 1s var(--ease)}
